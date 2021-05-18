@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="ScreenCap">
+    <file>icons/areascreen_icon.png</file>
+    <file>icons/customareascreen_icon.png</file>
+    <file>icons/record_icon.png</file>
+    <file>icons/screen_icon.png</file>
+  </qresource>
+</RCC>

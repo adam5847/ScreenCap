@@ -23,7 +23,6 @@ def qt_warnings():
     environ["QT_SCREEN_SCALE_FACTORS"] = "1"
     environ["QT_SCALE_FACTOR"] = "1"
 
-
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
@@ -100,7 +99,9 @@ class Ui_mainWindow(object):
         self.retranslateUi(mainWindow)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
         self.actionFolder.triggered.connect(lambda: self.clicked_folder())
-
+        self.actionjpg.triggered.connect(lambda: self.clicked_format("jpg"))
+        self.actionpng.triggered.connect(lambda: self.clicked_format("png"))
+ 
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "ScreenCap"))
@@ -116,6 +117,15 @@ class Ui_mainWindow(object):
         self.actionmp4.setText(_translate("mainWindow", "mp4"))
         self.actionavi.setText(_translate("mainWindow", "avi"))
         self.actionmvk.setText(_translate("mainWindow", "mvk"))
+
+    def clicked_format(self, extension):
+        f = open('memory_screenshot.txt','r')
+        lst = f.read().split(',')
+        f.close()
+        f = open('memory_screenshot.txt','w')
+        lst[1] = extension
+        f.write('{0},{1},{2}'.format(lst[0],lst[1],lst[2]))
+        f.close()
 
     def clicked_folder(self):
         self.screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder','C:/Users')
@@ -136,8 +146,9 @@ class Ui_mainWindow(object):
         f.close()
         mainWindow.showMinimized()
         time.sleep(0.5)
+        print(path)
         screenshot = ImageGrab.grab()
-        screenshot.save(path, lst[1])
+        screenshot.save(path)
         mainWindow.showNormal()
         f = open('memory_screenshot.txt','w')
         f.write('{0},{1},{2}'.format(i,lst[1],lst[2]))

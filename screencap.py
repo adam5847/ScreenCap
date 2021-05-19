@@ -15,7 +15,9 @@ from PyQt5.QtWidgets import *
 import sys
 from PIL import ImageGrab
 import time
-from os import environ
+from os import environ 
+import os.path
+import json
 
 def qt_warnings():
     environ["QT_DEVICE_PIXEL_RATIO"] = "0"
@@ -99,8 +101,8 @@ class Ui_mainWindow(object):
         self.retranslateUi(mainWindow)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
         self.actionFolder.triggered.connect(lambda: self.clicked_folder())
-        self.actionjpg.triggered.connect(lambda: self.clicked_format("jpg"))
-        self.actionpng.triggered.connect(lambda: self.clicked_format("png"))
+        self.actionjpg.triggered.connect(lambda: self.clicked_format(".jpg"))
+        self.actionpng.triggered.connect(lambda: self.clicked_format(".png"))
  
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -118,41 +120,56 @@ class Ui_mainWindow(object):
         self.actionavi.setText(_translate("mainWindow", "avi"))
         self.actionmvk.setText(_translate("mainWindow", "mvk"))
 
+    def memoryNotFound(self):
+        f = open("memory.json", "w") 
+        config = '''{"image":{"name":"screenshot","number":"0","extension":".png","path":" "},"video":{"name":"screenrecord","number":"0","extension":".mp4","path": " "}}'''
+        f.write(config)
+        f.close()
+
+    def unknown_folder(self):
+        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder','C:/Users')
+        return screenshot_path
+
     def clicked_format(self, extension):
-        f = open('memory_screenshot.txt','r')
-        lst = f.read().split(',')
-        f.close()
-        f = open('memory_screenshot.txt','w')
-        lst[1] = extension
-        f.write('{0},{1},{2}'.format(lst[0],lst[1],lst[2]))
-        f.close()
+        if (os.path.exists("memory.json")) == False:
+            self.memoryNotFound()
+        with open('memory.json', 'r+') as f:
+            data = json.load(f)
+            data['image']['extension'] = extension
+            f.seek(0)
+            f.write(json.dumps(data, indent=2))
+            f.truncate()
 
     def clicked_folder(self):
-        self.screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder','C:/Users')
-        f = open('memory_screenshot.txt','r')
-        lst = f.read().split(',')
-        f.close()
-        f = open('memory_screenshot.txt','w')
-        lst[2] = self.screenshot_path
-        f.write('{0},{1},{2}'.format(lst[0],lst[1],lst[2]))
-        f.close()
-
+        if (os.path.exists("memory.json")) == False:
+            self.memoryNotFound()
+        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder','C:/Users')
+        with open('memory.json', 'r+') as f:
+            data = json.load(f)
+            data['image']['path'] = screenshot_path
+            f.seek(0)
+            f.write(json.dumps(data, indent=2))
+            f.truncate()
+            
     def clicked_sceenshot(self):
-        f = open('memory_screenshot.txt','r')
-        lst = f.read().split(',')
-        i = int(lst[0])+1
-        i = str(i)
-        path  = lst[2] + '/screenshot' + i + '.' + lst[1]
-        f.close()
+        if (os.path.exists("memory.json")) == False:
+            self.memoryNotFound()
+        with open('memory.json', 'r+') as f:
+            data = json.load(f)
+            number = int(data['image']['number'])
+            data['image']['number'] = str(number+1)
+            if data['image']['path'] == " ":
+                data['image']['path'] = self.unknown_folder()
+            f.seek(0)
+            f.write(json.dumps(data, indent=2))
+            f.truncate()
+            path = data['image']['path'] + '/'+ data['image']['name'] + data['image']["number"] + data['image']["extension"]
         mainWindow.showMinimized()
-        time.sleep(0.5)
         print(path)
+        time.sleep(0.5)
         screenshot = ImageGrab.grab()
         screenshot.save(path)
         mainWindow.showNormal()
-        f = open('memory_screenshot.txt','w')
-        f.write('{0},{1},{2}'.format(i,lst[1],lst[2]))
-        f.close()
 
 if __name__ == "__main__":
     qt_warnings()

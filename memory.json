@@ -1,0 +1,14 @@
+{
+  "image": {
+    "name": "screenshot",
+    "number": "0",
+    "extension": ".png",
+    "path": " "
+  },
+  "video": {
+    "name": "screenrecord",
+    "number": "0",
+    "extension": ".mp4",
+    "path": " "
+  }
+}

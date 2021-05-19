@@ -30,6 +30,7 @@
 <p>Folders and extensions for screenshots and screen records can be selected in upper menubar</p>
 <img src="icons/README/menubar_readme.jpg" alt="menubar">
 <h1>License</h1>
+<p> GPL-3.0 License </p>
 <h1>Written in Python 3.9 with Libs</h1>
 <ul>
     <li>PyQt5</li>

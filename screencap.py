@@ -134,43 +134,37 @@ class Ui_mainWindow(object):
         self.actionmvk.setText(_translate("mainWindow", "mvk"))
 
     def clicked_format(self, extension):
-        previous = data['image']['extension']
-        data['image']['extension'] = extension
-        if previous != data['image']['extension']:
-            with open('memory.json', 'w') as f:
-                f.seek(0)
-                f.write(json.dumps(data, indent=2))
-                f.truncate()
+        if config['image']['extension'] != extension:
+            config['image']['extension'] = extension
+            self.save_config()
 
     def clicked_folder(self):
-        previous = data['image']['path']
-        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder','C:/Users')
-        data['image']['path'] = screenshot_path
-        if previous != data['image']['path']:
-            with open('memory.json', 'w') as f:
-                f.seek(0)
-                f.write(json.dumps(data, indent=2))
-                f.truncate()
+        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder')
+        if config['image']['path'] != screenshot_path:
+            config['image']['path'] = screenshot_path
+            self.save_config()
             
     def clicked_sceenshot(self):
-        if (data['image']['path']) == " ":
+        if (config['image']['path']) == " ":
             self.clicked_folder()
         now = datetime.now()
         timeNow = now.strftime("%d-%m-%Y %H.%M.%S")
-        path = data['image']['path'] + '/'+ data['image']['name'] + timeNow + data['image']["extension"]
+        path = os.path.join(config['image']['path'], config['image']['name'] + timeNow + config['image']["extension"])
         mainWindow.showMinimized()
         time.sleep(0.5)
         screenshot = ImageGrab.grab()
         screenshot.save(path)
         mainWindow.showNormal()
 
+    def save_config(self):
+        with open('memory.json', 'w') as f:
+            json.dump(config, f, indent=2)
+
 if __name__ == "__main__":
     qt_warnings()
-    if (os.path.exists("memory.json")) == True:
+    if (os.path.exists("memory.json")):
         with open('memory.json', 'r') as f:
-            data = json.load(f)
-    else:
-        data = config   
+            config = json.load(f)   
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = QtWidgets.QMainWindow()
     ui = Ui_mainWindow()

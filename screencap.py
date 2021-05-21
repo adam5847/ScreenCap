@@ -23,12 +23,12 @@ config = {
   "image": {
     "name": "screenshot",
     "extension": ".png",
-    "path": " "
+    "path": None
   },
   "video": {
     "name": "screenrecord",
     "extension": ".mp4",
-    "path": " "
+    "path": None
   }
 }
 
@@ -54,7 +54,7 @@ def save_config():
             json.dump(config, f, indent=2)
 
 def screenshot_path():
-        if (config['image']['path']) == " ":
+        if (config['image']['path']) is None:
             clicked_folder()
         now = datetime.now()
         timeNow = now.strftime("%d-%m-%Y %H.%M.%S")

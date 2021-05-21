@@ -23,12 +23,12 @@ config = {
   "image": {
     "name": "screenshot",
     "extension": ".png",
-    "path": " "
+    "path": None
   },
   "video": {
     "name": "screenrecord",
     "extension": ".mp4",
-    "path": " "
+    "path": None
   }
 }
 
@@ -145,7 +145,7 @@ class Ui_mainWindow(object):
             self.save_config()
             
     def clicked_sceenshot(self):
-        if (config['image']['path']) == " ":
+        if (config['image']['path']) is None:
             self.clicked_folder()
         now = datetime.now()
         timeNow = now.strftime("%d-%m-%Y %H.%M.%S")

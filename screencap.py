@@ -38,10 +38,33 @@ def qt_warnings():
     environ["QT_SCREEN_SCALE_FACTORS"] = "1"
     environ["QT_SCALE_FACTOR"] = "1"
 
+def clicked_format(extension):
+        if config['image']['extension'] != extension:
+            config['image']['extension'] = extension
+            save_config()
+
+def clicked_folder():
+    screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder')
+    if config['image']['path'] != screenshot_path:
+        config['image']['path'] = screenshot_path
+        save_config()
+
+def save_config():
+        with open('memory.json', 'w') as f:
+            json.dump(config, f, indent=2)
+
+def screenshot_path():
+        if (config['image']['path']) == " ":
+            clicked_folder()
+        now = datetime.now()
+        timeNow = now.strftime("%d-%m-%Y %H.%M.%S")
+        path = os.path.join(config['image']['path'], config['image']['name'] + timeNow + config['image']["extension"])
+        return path
+
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
-        mainWindow.resize(409, 126)
+        mainWindow.setFixedSize(409, 126)
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.screenshot = QtWidgets.QPushButton(self.centralwidget)
@@ -57,6 +80,7 @@ class Ui_mainWindow(object):
         self.areascreenshot.setIcon(QIcon("icons/areascreen_icon.png"))
         self.areascreenshot.setIconSize(QSize(90,90))
         self.areascreenshot.setObjectName("areascreenshot")
+        self.areascreenshot.clicked.connect(lambda: self.clicked_areasceenshot())
         self.careascreenshot = QtWidgets.QPushButton(self.centralwidget)
         self.careascreenshot.setGeometry(QtCore.QRect(210, 10, 91, 81))
         self.careascreenshot.setText("")
@@ -113,9 +137,9 @@ class Ui_mainWindow(object):
 
         self.retranslateUi(mainWindow)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
-        self.actionFolder.triggered.connect(lambda: self.clicked_folder())
-        self.actionjpg.triggered.connect(lambda: self.clicked_format(".jpg"))
-        self.actionpng.triggered.connect(lambda: self.clicked_format(".png"))
+        self.actionFolder.triggered.connect(lambda: clicked_folder())
+        self.actionjpg.triggered.connect(lambda: clicked_format(".jpg"))
+        self.actionpng.triggered.connect(lambda: clicked_format(".png"))
  
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -132,33 +156,61 @@ class Ui_mainWindow(object):
         self.actionmp4.setText(_translate("mainWindow", "mp4"))
         self.actionavi.setText(_translate("mainWindow", "avi"))
         self.actionmvk.setText(_translate("mainWindow", "mvk"))
-
-    def clicked_format(self, extension):
-        if config['image']['extension'] != extension:
-            config['image']['extension'] = extension
-            self.save_config()
-
-    def clicked_folder(self):
-        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder')
-        if config['image']['path'] != screenshot_path:
-            config['image']['path'] = screenshot_path
-            self.save_config()
             
     def clicked_sceenshot(self):
-        if (config['image']['path']) == " ":
-            self.clicked_folder()
-        now = datetime.now()
-        timeNow = now.strftime("%d-%m-%Y %H.%M.%S")
-        path = os.path.join(config['image']['path'], config['image']['name'] + timeNow + config['image']["extension"])
         mainWindow.showMinimized()
         time.sleep(0.5)
         screenshot = ImageGrab.grab()
-        screenshot.save(path)
+        screenshot.save(screenshot_path())
         mainWindow.showNormal()
 
-    def save_config(self):
-        with open('memory.json', 'w') as f:
-            json.dump(config, f, indent=2)
+    def clicked_areasceenshot(self):
+        mainWindow.close()
+        self.window = AreaScreenshot()
+        mainWindow.showMinimized()
+
+class AreaScreenshot(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        screen = app.desktop().screenGeometry()
+        width, height = screen.width(), screen.height()
+        self.setGeometry(0, 0, width, height)
+        self.setWindowOpacity(0.2)
+        self.start = QtCore.QPoint()
+        self.end = QtCore.QPoint()
+        _translate = QtCore.QCoreApplication.translate
+        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
+        self.setWindowTitle(_translate("self", "ScreenCap")) 
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.show()
+
+    def paintEvent(self, event):
+        paint = QtGui.QPainter(self)
+        paint.setPen(QtGui.QPen(QtGui.QColor('blue'),2))
+        paint.setBrush(QtGui.QColor(126, 191, 255, 128))
+        paint.drawRect(QtCore.QRect(self.start, self.end))
+
+    def mousePressEvent(self, event):
+        self.start = event.pos()
+        self.end = self.start
+        self.update()
+
+    def mouseMoveEvent(self, event):
+        self.end = event.pos()
+        self.update()
+
+    def mouseReleaseEvent(self, event):
+        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        a = min(self.start.x(), self.end.x())
+        b = min(self.start.y(), self.end.y())
+        c = max(self.start.x(), self.end.x())
+        d = max(self.start.y(), self.end.y())
+        self.setWindowOpacity(0)
+        areascreenshot = ImageGrab.grab(bbox=(a, b , c, d))
+        areascreenshot.save(screenshot_path())
+        time.sleep(0.5)
+        mainWindow.showNormal()
+        self.close()
 
 if __name__ == "__main__":
     qt_warnings()

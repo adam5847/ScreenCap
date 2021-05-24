@@ -39,27 +39,37 @@ def qt_warnings():
     environ["QT_SCALE_FACTOR"] = "1"
 
 def clicked_format(extension):
-        if config['image']['extension'] != extension:
-            config['image']['extension'] = extension
-            save_config()
-
-def clicked_folder():
-    screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder')
-    if config['image']['path'] != screenshot_path:
-        config['image']['path'] = screenshot_path
+    if config['image']['extension'] != extension:
+        config['image']['extension'] = extension
         save_config()
 
+def clicked_folder():
+    screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder', config['image']['path'])
+    if screenshot_path:
+        if config['image']['path'] != screenshot_path:
+            config['image']['path'] = screenshot_path
+            save_config()
+
 def save_config():
-        with open('memory.json', 'w') as f:
-            json.dump(config, f, indent=2)
+    with open('memory.json', 'w') as f:
+        json.dump(config, f, indent=2)
 
 def screenshot_path():
-        if (config['image']['path']) is None:
-            clicked_folder()
+    if (config['image']['path']) is None:
+        clicked_folder()
+    if config['image']['path']:
         now = datetime.now()
         timeNow = now.strftime("%d-%m-%Y %H.%M.%S")
         path = os.path.join(config['image']['path'], config['image']['name'] + timeNow + config['image']["extension"])
         return path
+
+def showDialog():
+    msgWindow = QMessageBox()
+    msgWindow.setIcon(QMessageBox.Information)
+    msgWindow.setText("Screenshot is saved in " + config['image']['path'])
+    msgWindow.setWindowTitle("ScreenCap")  
+    msgWindow.exec_()
+    msgWindow.showNormal()
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
@@ -158,10 +168,11 @@ class Ui_mainWindow(object):
         self.actionmvk.setText(_translate("mainWindow", "mvk"))
             
     def clicked_sceenshot(self):
-        mainWindow.showMinimized()
+        mainWindow.close()
         time.sleep(0.5)
         screenshot = ImageGrab.grab()
         screenshot.save(screenshot_path())
+        showDialog()
         mainWindow.showNormal()
 
     def clicked_areasceenshot(self):
@@ -209,6 +220,7 @@ class AreaScreenshot(QtWidgets.QWidget):
         areascreenshot = ImageGrab.grab(bbox=(a, b , c, d))
         areascreenshot.save(screenshot_path())
         time.sleep(0.5)
+        showDialog()
         mainWindow.showNormal()
         self.close()
 

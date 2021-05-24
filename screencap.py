@@ -38,6 +38,14 @@ def qt_warnings():
     environ["QT_SCREEN_SCALE_FACTORS"] = "1"
     environ["QT_SCALE_FACTOR"] = "1"
 
+def showDialog():
+    msgWindow = QMessageBox()
+    msgWindow.setIcon(QMessageBox.Information)
+    msgWindow.setText("Screenshot is saved in " + config['image']['path'])
+    msgWindow.setWindowTitle("ScreenCap")  
+    msgWindow.exec_()
+    msgWindow.showNormal()
+
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
@@ -139,22 +147,25 @@ class Ui_mainWindow(object):
             self.save_config()
 
     def clicked_folder(self):
-        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder')
-        if config['image']['path'] != screenshot_path:
-            config['image']['path'] = screenshot_path
-            self.save_config()
+        screenshot_path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Folder' , config['image']['path'])
+        if screenshot_path:
+            if config['image']['path'] != screenshot_path:
+                config['image']['path'] = screenshot_path
+                self.save_config()
             
     def clicked_sceenshot(self):
         if (config['image']['path']) is None:
             self.clicked_folder()
-        now = datetime.now()
-        timeNow = now.strftime("%d-%m-%Y %H.%M.%S")
-        path = os.path.join(config['image']['path'], config['image']['name'] + timeNow + config['image']["extension"])
-        mainWindow.showMinimized()
-        time.sleep(0.5)
-        screenshot = ImageGrab.grab()
-        screenshot.save(path)
-        mainWindow.showNormal()
+        if config['image']['path']:
+            now = datetime.now()
+            timeNow = now.strftime("%d-%m-%Y %H.%M.%S")
+            path = os.path.join(config['image']['path'], config['image']['name'] + timeNow + config['image']["extension"])
+            mainWindow.close()
+            time.sleep(0.5)
+            screenshot = ImageGrab.grab()
+            screenshot.save(path)
+            showDialog()
+            mainWindow.showNormal()
 
     def save_config(self):
         with open('memory.json', 'w') as f:

@@ -38,7 +38,7 @@ def qt_warnings():
     environ["QT_SCREEN_SCALE_FACTORS"] = "1"
     environ["QT_SCALE_FACTOR"] = "1"
 
-def showDialog():
+def show_dialog():
     msgWindow = QMessageBox()
     msgWindow.setIcon(QMessageBox.Information)
     msgWindow.setText("Screenshot is saved in " + config['image']['path'])
@@ -164,7 +164,7 @@ class Ui_mainWindow(object):
             time.sleep(0.5)
             screenshot = ImageGrab.grab()
             screenshot.save(path)
-            showDialog()
+            show_dialog()
             mainWindow.showNormal()
 
     def save_config(self):

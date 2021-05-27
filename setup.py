@@ -26,6 +26,6 @@ setup(
     long_description_content_type='text/markdown',
     include_package_data = True,
     entry_points={
-        'console_scripts': [ 'ScreenCap=screencap:main']
+        'console_scripts': [ 'ScreenCap=ScreenCap.screencap:main']
     }
 )

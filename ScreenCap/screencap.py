@@ -33,17 +33,12 @@ config = {
 }
 
 def main():
+    global config
     qt_warnings()
     if (os.path.exists("memory.json")):
         with open('memory.json', 'r') as f:
-            config = json.load(f)   
-    app = QtWidgets.QApplication(sys.argv)
-    mainWindow = QtWidgets.QMainWindow()
-    ui = Ui_mainWindow()
-    ui.setupUi(mainWindow)
-    mainWindow.show()
-    sys.exit(app.exec_())
-
+            config = json.load(f)
+            
 def qt_warnings():
     environ["QT_DEVICE_PIXEL_RATIO"] = "0"
     environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
@@ -183,5 +178,12 @@ class Ui_mainWindow(object):
         with open('memory.json', 'w') as f:
             json.dump(config, f, indent=2)
 
-if __name__ == "__main__":
-    main()
+    
+if __name__ == "__main__": 
+    main() 
+    app = QtWidgets.QApplication(sys.argv)
+    mainWindow = QtWidgets.QMainWindow()
+    ui = Ui_mainWindow()
+    ui.setupUi(mainWindow)
+    mainWindow.show()
+    sys.exit(app.exec_())

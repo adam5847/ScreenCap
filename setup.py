@@ -1,7 +1,11 @@
 from setuptools import  setup
 from setuptools import find_packages
+from os import path
 
 REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='ScreenCap',
@@ -17,6 +21,11 @@ setup(
     classifiers=[
         "Development Status :: 1 - Planning",
         "Programming Language :: Python :: 3",
-        "Operating System :: Microsoft :: Windows",
     ],
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    include_package_data = True,
+    entry_points={
+        'console_scripts': [ 'ScreenCap=screencap:main']
+    }
 )

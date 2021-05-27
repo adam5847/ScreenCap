@@ -1,1 +1,6 @@
 include ScreenCap/icons_transparent/*.png
+include README.md
+include LICENSE
+include requirements.txt
+include README-icons_filled/*.png
+include README-icons_filled/*.jpg

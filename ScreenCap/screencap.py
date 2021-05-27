@@ -32,6 +32,18 @@ config = {
   }
 }
 
+def main():
+    qt_warnings()
+    if (os.path.exists("memory.json")):
+        with open('memory.json', 'r') as f:
+            config = json.load(f)   
+    app = QtWidgets.QApplication(sys.argv)
+    mainWindow = QtWidgets.QMainWindow()
+    ui = Ui_mainWindow()
+    ui.setupUi(mainWindow)
+    mainWindow.show()
+    sys.exit(app.exec_())
+
 def qt_warnings():
     environ["QT_DEVICE_PIXEL_RATIO"] = "0"
     environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
@@ -55,26 +67,26 @@ class Ui_mainWindow(object):
         self.screenshot = QtWidgets.QPushButton(self.centralwidget)
         self.screenshot.setGeometry(QtCore.QRect(10, 10, 91, 81))
         self.screenshot.setText("")
-        self.screenshot.setIcon(QIcon("ScreenCap/icons_transparent/screen_icon.png"))
+        self.screenshot.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons_transparent", "screen_icon.png")))
         self.screenshot.setIconSize(QSize(90,90))
         self.screenshot.setObjectName("screenshot")
         self.screenshot.clicked.connect(lambda: self.clicked_sceenshot())
         self.areascreenshot = QtWidgets.QPushButton(self.centralwidget)
         self.areascreenshot.setGeometry(QtCore.QRect(110, 10, 91, 81))
         self.areascreenshot.setText("")
-        self.areascreenshot.setIcon(QIcon("ScreenCap/icons_transparent/areascreen_icon.png"))
+        self.areascreenshot.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons_transparent", "areascreen_icon.png")))
         self.areascreenshot.setIconSize(QSize(90,90))
         self.areascreenshot.setObjectName("areascreenshot")
         self.careascreenshot = QtWidgets.QPushButton(self.centralwidget)
         self.careascreenshot.setGeometry(QtCore.QRect(210, 10, 91, 81))
         self.careascreenshot.setText("")
-        self.careascreenshot.setIcon(QIcon("ScreenCap/icons_transparent/customareascreen_icon.png"))
+        self.careascreenshot.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons_transparent", "customareascreen_icon.png")))
         self.careascreenshot.setIconSize(QSize(90,90))
         self.careascreenshot.setObjectName("careascreenshot")
         self.record = QtWidgets.QPushButton(self.centralwidget)
         self.record.setGeometry(QtCore.QRect(310, 10, 91, 81))
         self.record.setText("")
-        self.record.setIcon(QIcon("ScreenCap/icons_transparent/record_icon.png"))
+        self.record.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons_transparent", "record_icon.png")))
         self.record.setIconSize(QSize(90,90))
         self.record.setObjectName("record")
         mainWindow.setCentralWidget(self.centralwidget)
@@ -172,13 +184,4 @@ class Ui_mainWindow(object):
             json.dump(config, f, indent=2)
 
 if __name__ == "__main__":
-    qt_warnings()
-    if (os.path.exists("memory.json")):
-        with open('memory.json', 'r') as f:
-            config = json.load(f)   
-    app = QtWidgets.QApplication(sys.argv)
-    mainWindow = QtWidgets.QMainWindow()
-    ui = Ui_mainWindow()
-    ui.setupUi(mainWindow)
-    mainWindow.show()
-    sys.exit(app.exec_())
+    main()
